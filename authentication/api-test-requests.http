@@ -1,0 +1,158 @@
+###
+### JWT Authentication API Test Requests
+### Use this file with REST Client extensions or copy to tools like Postman/Insomnia
+###
+
+@baseUrl = http://localhost:8080
+@contentType = application/json
+
+### Variables (update after each request)
+@accessToken = your_access_token_here
+@refreshToken = your_refresh_token_here
+
+###############################################
+### 1. Health Check
+###############################################
+
+GET {{baseUrl}}/api/auth/health
+
+###############################################
+### 2. Register New User
+###############################################
+
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "john.doe@example.com",
+  "password": "SecurePassword123!",
+  "firstName": "John",
+  "lastName": "Doe",
+  "role": "USER"
+}
+
+###############################################
+### 3. Register Admin User
+###############################################
+
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "admin@example.com",
+  "password": "AdminPassword123!",
+  "firstName": "Admin",
+  "lastName": "User",
+  "role": "ADMIN"
+}
+
+###############################################
+### 4. Login User
+###############################################
+
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "john.doe@example.com",
+  "password": "SecurePassword123!"
+}
+
+###############################################
+### 5. Login Admin
+###############################################
+
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "admin@example.com",
+  "password": "AdminPassword123!"
+}
+
+###############################################
+### 6. Refresh Access Token
+###############################################
+
+POST {{baseUrl}}/api/auth/refresh
+Content-Type: {{contentType}}
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+###############################################
+### 7. Get Current User Profile
+###############################################
+
+GET {{baseUrl}}/api/user/me
+Authorization: Bearer {{accessToken}}
+
+###############################################
+### 8. Get User Profile
+###############################################
+
+GET {{baseUrl}}/api/user/profile
+Authorization: Bearer {{accessToken}}
+
+###############################################
+### 9. Admin Dashboard (Requires ADMIN role)
+###############################################
+
+GET {{baseUrl}}/api/admin/dashboard
+Authorization: Bearer {{accessToken}}
+
+###############################################
+### 10. Admin Statistics (Requires ADMIN role)
+###############################################
+
+GET {{baseUrl}}/api/admin/stats
+Authorization: Bearer {{accessToken}}
+
+###############################################
+### Error Test Cases
+###############################################
+
+### Invalid Login Credentials
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "wrong@example.com",
+  "password": "wrongpassword"
+}
+
+###
+
+### Duplicate Email Registration
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "john.doe@example.com",
+  "password": "AnotherPassword123!",
+  "firstName": "Jane",
+  "lastName": "Doe",
+  "role": "USER"
+}
+
+###
+
+### Access Protected Endpoint Without Token
+GET {{baseUrl}}/api/user/me
+
+###
+
+### Invalid Refresh Token
+POST {{baseUrl}}/api/auth/refresh
+Content-Type: {{contentType}}
+
+{
+  "refreshToken": "invalid_token_here"
+}
+
+###
+
+### User Accessing Admin Endpoint (Should Fail)
+GET {{baseUrl}}/api/admin/dashboard
+Authorization: Bearer {{accessToken}}
